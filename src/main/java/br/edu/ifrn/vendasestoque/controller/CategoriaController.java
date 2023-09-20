@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import br.edu.ifrn.vendasestoque.domain.categoria.Categoria;
 import br.edu.ifrn.vendasestoque.repository.CategoriaRepository;
@@ -18,8 +19,12 @@ public class CategoriaController {
     private CategoriaRepository repository;
 
     @PostMapping
-    public ResponseEntity<Categoria> cadastrarCategoria(@RequestBody Categoria categoria){
-         return ResponseEntity.ok(repository.save(categoria));
+    public ResponseEntity cadastrarCategoria(@RequestBody Categoria categoria, 
+                                            UriComponentsBuilder uriBuilder){
+        Categoria categoriaLocal = repository.save(categoria);
+        var uri = uriBuilder.path("/categorias/{id}").
+                  buildAndExpand(categoriaLocal.getId()).toUri();
+        return ResponseEntity.created(uri).build();
     }
     
 }
